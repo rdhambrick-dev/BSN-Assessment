@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "BSN Rental"
+version = "0.1.0"
+description = "Backend Developer Assessment for BSN"
+authors = ["richard.hambrick.dev@gmail.com"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = "^3.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
