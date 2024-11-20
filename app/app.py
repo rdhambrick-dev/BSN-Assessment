@@ -7,6 +7,7 @@ from db import close_database
 import customer
 import vehicle
 import rental
+import availabilty
 
 
 def create_app():
