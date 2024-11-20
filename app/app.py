@@ -6,6 +6,7 @@ from flask import Flask
 from db import close_database
 import customer
 import vehicle
+import rental
 
 
 def create_app():
@@ -23,5 +24,6 @@ def create_app():
 
     app.register_blueprint(customer.bp)
     app.register_blueprint(vehicle.bp)
+    app.register_blueprint(rental.bp)
 
     return app
