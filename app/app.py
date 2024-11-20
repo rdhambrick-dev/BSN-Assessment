@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from flask import Flask
 
 from db import close_database
+import customer
+import vehicle
 
 
 def create_app():
@@ -18,5 +20,8 @@ def create_app():
     }
 
     app.teardown_appcontext(close_database)
+
+    app.register_blueprint(customer.bp)
+    app.register_blueprint(vehicle.bp)
 
     return app
