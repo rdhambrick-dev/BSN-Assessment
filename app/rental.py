@@ -26,8 +26,8 @@ class Rental:
             "id": self.id,
             "vehicle_id": self.vehicle_id,
             "customer_id": self.customer_id,
-            "pickup_date": self.pickup_date.strftime("%Y-%m-%d"),
-            "return_date": self.return_date.strftime("%Y-%m-%d")
+            "pickup_date": self.pickup_date.strftime(Rental.DATE_FORMAT),
+            "return_date": self.return_date.strftime(Rental.DATE_FORMAT)
         }
 
 

@@ -8,6 +8,7 @@ import customer
 import vehicle
 import rental
 import availabilty
+import report
 
 
 def create_app():
@@ -26,5 +27,6 @@ def create_app():
     app.register_blueprint(customer.bp)
     app.register_blueprint(vehicle.bp)
     app.register_blueprint(rental.bp)
+    app.register_blueprint(report.bp)
 
     return app
