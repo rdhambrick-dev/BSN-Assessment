@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, abort
 
 from db import get_database
 from rental import Rental
@@ -44,8 +44,9 @@ class ReportRental:
 @bp.get("/")
 def get_report():
     request_data = request.get_json()
+
     if "date" not in request_data:
-        pass  # todo error if no date in request data
+        abort(400, description="Missing report date.")
 
     query = ("SELECT "
              "vehicle.category, "

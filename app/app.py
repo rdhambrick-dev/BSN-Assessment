@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, jsonify
 
 from db import close_database
 import customer
@@ -28,5 +28,13 @@ def create_app():
     app.register_blueprint(vehicle.bp)
     app.register_blueprint(rental.bp)
     app.register_blueprint(report.bp)
+
+    @app.errorhandler(404)
+    def resource_not_found(e):
+        return jsonify(error=str(e)), 404
+
+    @app.errorhandler(400)
+    def bad_request(e):
+        return jsonify(error=str(e)), 400
 
     return app

@@ -1,6 +1,8 @@
-from flask import Blueprint, request, abort, jsonify
+from flask import Blueprint, request, abort
 
 from db import get_database
+
+bp = Blueprint("vehicle", __name__, url_prefix="/vehicles")
 
 
 class Vehicle:
@@ -15,20 +17,13 @@ class Vehicle:
         }
 
 
-bp = Blueprint("vehicle", __name__, url_prefix="/vehicles")
-
-
-@bp.errorhandler(404)
-def vehicle_not_found(e):
-    return jsonify(error=str(e)), 404
-
-
 @bp.post("/")
 def create_vehicle():
     request_data = request.get_json()
     vehicle_category = request_data.get("category")
 
-    # todo error handling if no category
+    if not vehicle_category:
+        abort(400, description="Missing vehicle category.")
 
     database = get_database()
     cursor = database.cursor()
@@ -38,8 +33,6 @@ def create_vehicle():
     )
     new_vehicle_id = cursor.lastrowid
     database.commit()
-
-    # todo error handling if failed to create (category constraint in db)
 
     new_vehicle = Vehicle(new_vehicle_id, vehicle_category)
     return new_vehicle.dict(), 201
@@ -93,13 +86,14 @@ def update_vehicle(id):
             "category": request_data.get("category")
         }
 
+    if not new_vehicle_data["category"]:
+        abort(400, description="Missing vehicle category.")
+
     cursor.execute(
         "UPDATE vehicle SET category = %(category)s WHERE id = %(id)s",
         new_vehicle_data
     )
     database.commit()
-
-    # todo error handling if failed to create
 
     new_vehicle = Vehicle(**new_vehicle_data)
     return new_vehicle.dict()

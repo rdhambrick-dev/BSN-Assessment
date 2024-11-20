@@ -21,5 +21,6 @@ CREATE TABLE rental (
     return_date DATE NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (vehicle_id) REFERENCES vehicle(id),
-    FOREIGN KEY (customer_id) REFERENCES customer(id)
+    FOREIGN KEY (customer_id) REFERENCES customer(id),
+    CONSTRAINT return_date_after_pickup_date CHECK (return_date >= pickup_date)
 );

@@ -1,8 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from flask import Blueprint, request, abort, jsonify
+from flask import Blueprint, request, abort
 
 from db import get_database
+
+bp = Blueprint("rental", __name__, url_prefix="/rentals")
 
 
 class Rental:
@@ -31,12 +33,18 @@ class Rental:
         }
 
 
-bp = Blueprint("rental", __name__, url_prefix="/rentals")
-
-
-@bp.errorhandler(404)
-def rental_not_found(e):
-    return jsonify(error=str(e)), 404
+def validate_rental_dates(pickup_date: str, return_date: str):
+    today = datetime.today().date()
+    pickup_date = datetime.strptime(pickup_date, Rental.DATE_FORMAT).date()
+    return_date = datetime.strptime(return_date, Rental.DATE_FORMAT).date()
+    if pickup_date < today:
+        abort(400, description="Pickup date cannot be in the past.")
+    if pickup_date > today + timedelta(weeks=1):
+        abort(400, description="Reservation cannot be made more than one week in advance.")
+    if return_date > pickup_date + timedelta(weeks=1):
+        abort(400, description="Reservation cannot be longer than one week.")
+    if pickup_date > return_date:
+        abort(400, description="Return date cannot be before pickup date.")
 
 
 @bp.post("/")
@@ -49,7 +57,9 @@ def create_rental():
         "return_date": request_data.get("return_date")
     }
 
-    # todo error handling
+    validate_rental_dates(rental_data["pickup_date"], rental_data["return_date"])
+
+    # TODO prevent rental creation if vehicle is already rented during requested dates
 
     database = get_database()
     cursor = database.cursor()
@@ -62,9 +72,11 @@ def create_rental():
     new_rental_id = cursor.lastrowid
     database.commit()
 
-    # todo error handling if failed to create (eg reservation date constraint in db)
-
     new_rental = Rental(new_rental_id, **rental_data)
+
+    # todo send an invoice to user via email
+    # todo send confirmation email to user if reservation is made in advance
+
     return new_rental.dict(), 201
 
 
@@ -122,6 +134,10 @@ def update_rental(id):
             "return_date": request_data.get("return_date")
         }
 
+    validate_rental_dates(new_rental_data["pickup_date"], new_rental_data["return_date"])
+
+    # TODO prevent rental update if vehicle is already reserved during requested dates (by another rental)
+
     cursor.execute(
         "UPDATE rental SET "
         "vehicle_id = %(vehicle_id)s, "
@@ -132,8 +148,6 @@ def update_rental(id):
         new_rental_data
     )
     database.commit()
-
-    # todo error handling if failed to create (eg reservation constraint in db)
 
     new_rental = Rental(**new_rental_data)
     return new_rental.dict()

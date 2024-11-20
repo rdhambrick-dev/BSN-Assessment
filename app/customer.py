@@ -1,6 +1,8 @@
-from flask import Blueprint, request, abort, jsonify
+from flask import Blueprint, request, abort
 
 from db import get_database
+
+bp = Blueprint("customer", __name__, url_prefix="/customers")
 
 
 class Customer:
@@ -21,14 +23,6 @@ class Customer:
         }
 
 
-bp = Blueprint("customer", __name__, url_prefix="/customers")
-
-
-@bp.errorhandler(404)
-def customer_not_found(e):
-    return jsonify(error=str(e)), 404
-
-
 @bp.post("/")
 def create_customer():
     request_data = request.get_json()
@@ -39,7 +33,10 @@ def create_customer():
         "email": request_data.get("email")
     }
 
-    # todo error handling
+    if not customer_data["name"]:
+        abort(400, description="Missing customer name.")
+    if not customer_data["email"]:
+        abort(400, description="Missing customer email.")
 
     database = get_database()
     cursor = database.cursor()
@@ -51,8 +48,6 @@ def create_customer():
     )
     new_customer_id = cursor.lastrowid
     database.commit()
-
-    # todo error handling if failed to create (eg email constraint in db)
 
     new_customer = Customer(new_customer_id, **customer_data)
     return new_customer.dict(), 201
@@ -112,6 +107,11 @@ def update_customer(id):
             "email": request_data.get("email")
         }
 
+    if not new_customer_data["name"]:
+        abort(400, description="Missing customer name.")
+    if not new_customer_data["email"]:
+        abort(400, description="Missing customer email.")
+
     cursor.execute(
         "UPDATE customer SET "
         "name = %(name)s, "
@@ -122,8 +122,6 @@ def update_customer(id):
         new_customer_data
     )
     database.commit()
-
-    # todo error handling if failed to create (eg email constraint in db)
 
     new_customer = Customer(**new_customer_data)
     return new_customer.dict()
