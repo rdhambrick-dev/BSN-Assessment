@@ -12,12 +12,12 @@ DB_PASSWORD=<database password>
 
 ## Endpoints
 Simple CRUD endpoints exist for vehicles, customers, and rentals at:
-- `/vehciles/`
+- `/vehicles/`
 - `/customers/`
 - `/rentals/`
 
 Other feature endpoints include:
-- `/vehciles/availability/` to check the availability of all vehicles. The query string parameter `category` can be used to check only vehicles of the specified category.
+- `/vehicles/availability/` to check the availability of all vehicles. The query string parameter `category` can be used to check only vehicles of the specified category.
 - `/vehciles/<id>/availability` to check the availability of a specific vehicle.
 - `/report/` to check all reservations that occur on a specific date. The date must be specified in the request body, with the form:
 ```json
