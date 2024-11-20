@@ -1,10 +1,12 @@
 import datetime
 
-from flask import abort, request
+from flask import abort, request, Blueprint
 
 from db import get_database
-from vehicle import Vehicle, bp
+from vehicle import Vehicle
 from rental import Rental
+
+bp = Blueprint("availability", __name__, url_prefix="/vehicles")
 
 
 @bp.get("/<int:id>/availability")
