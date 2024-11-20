@@ -35,8 +35,17 @@ class Rental:
 
 def validate_rental_dates(pickup_date: str, return_date: str):
     today = datetime.today().date()
-    pickup_date = datetime.strptime(pickup_date, Rental.DATE_FORMAT).date()
-    return_date = datetime.strptime(return_date, Rental.DATE_FORMAT).date()
+    if not pickup_date:
+        abort(400, description="Missing pickup date.")
+    if not return_date:
+        abort(400, description="Missing return date.")
+
+    try:
+        pickup_date = datetime.strptime(pickup_date, Rental.DATE_FORMAT).date()
+        return_date = datetime.strptime(return_date, Rental.DATE_FORMAT).date()
+    except (TypeError, ValueError):
+        abort(400, description="Invalid date. Accepted format: YYYY-MM-DD")
+
     if pickup_date < today:
         abort(400, description="Pickup date cannot be in the past.")
     if pickup_date > today + timedelta(weeks=1):
