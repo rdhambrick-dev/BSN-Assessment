@@ -8,6 +8,7 @@ DB_HOST=<host>
 DB_USER=<database username>
 DB_PASSWORD=<database password>
 ```
+3. From inside `app/` run `flask run`.
 
 ## Endpoints
 Simple CRUD endpoints exist for vehicles, customers, and rentals at:
