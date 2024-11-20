@@ -3,10 +3,11 @@ USE bsn;
 
 CREATE TABLE vehicle (
     id INT NOT NULL AUTO_INCREMENT,
-    category VARCHAR(20) NOT NULL,
+    category VARCHAR(20) NOT NULL CHECK(category in ('car', 'suv', 'van')),
     PRIMARY KEY (id)
 );
 CREATE INDEX idx_vehicle_id ON vehicle (id);
+
 
 CREATE TABLE customer (
     id INT NOT NULL AUTO_INCREMENT,

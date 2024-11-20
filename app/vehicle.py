@@ -6,9 +6,11 @@ bp = Blueprint("vehicle", __name__, url_prefix="/vehicles")
 
 
 class Vehicle:
+    CATEGORIES = ['car', 'suv', 'van']
+
     def __init__(self, id, category):
         self.id = id
-        self.category = category
+        self.category = category.lower()
 
     def dict(self):
         return {
@@ -24,6 +26,8 @@ def create_vehicle():
 
     if not vehicle_category:
         abort(400, description="Missing vehicle category.")
+    if vehicle_category not in Vehicle.CATEGORIES:
+        abort(400, description="Invalid vehicle category.")
 
     database = get_database()
     cursor = database.cursor()
